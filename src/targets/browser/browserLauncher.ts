@@ -3,7 +3,7 @@
  *--------------------------------------------------------*/
 
 import { IBrowserFinder, isQuality } from '@vscode/js-debug-browsers';
-import * as fs from 'fs';
+import { promises as fsp } from 'fs';
 import { inject, injectable } from 'inversify';
 import * as path from 'path';
 import { CancellationToken } from 'vscode';
@@ -108,11 +108,11 @@ export abstract class BrowserLauncher<T extends AnyChromiumLaunchConfiguration>
       );
     }
 
-    fs.mkdirSync(this.storagePath, { recursive: true });
+    await fsp.mkdir(this.storagePath, { recursive: true });
 
     if (resolvedDataDir) {
-      fs.mkdirSync(resolvedDataDir, { recursive: true });
-      resolvedDataDir = fs.realpathSync(resolvedDataDir);
+      await fsp.mkdir(resolvedDataDir, { recursive: true });
+      resolvedDataDir = await fsp.realpath(resolvedDataDir);
     }
 
     return await launcher.launch(
